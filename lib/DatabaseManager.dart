@@ -52,13 +52,33 @@ class FirebaseDb {
   }
 
   // Function to Update the blog
-  UpdateBlog(docid) async {
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
+  UpdateBlog(docid, date, desc, title, category) async {
+    await UpdateCategoryBlog(docid, date, desc, title, category);
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('All News');
     return users
-        .doc('ABC123')
-        .update({'company': 'Stokes and Sons'})
-        .then((value) => print("User Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
+        .doc(docid)
+        .update({
+          'date': date,
+          'description': desc,
+          'title': title,
+        })
+        .then((value) => print("Blog Updated"))
+        .catchError((error) => print("Failed to update Blog: $error"));
+  }
+
+  // Function to Update Category the blog
+  UpdateCategoryBlog(docid, date, desc, title, category) {
+    CollectionReference users = FirebaseFirestore.instance.collection(category);
+    return users
+        .doc(docid)
+        .update({
+          'date': date,
+          'description': desc,
+          'title': title,
+        })
+        .then((value) => print("Category Blog Updated"))
+        .catchError((error) => print("Failed to update Category Blog: $error"));
   }
 
   // Function To Delete a blog

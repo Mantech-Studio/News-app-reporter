@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app_reporter/Screens/DisplayBlogScreen.dart';
+import 'package:news_app_reporter/Screens/UpdateBlogScreen.dart';
 import 'AddBlogPage.dart';
 import 'package:news_app_reporter/DatabaseManager.dart';
 
@@ -60,7 +61,14 @@ class _BlogPageState extends State<BlogPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               IconButton(
-                                  onPressed: () {}, icon: Icon(Icons.edit)),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                UpdateBlogPage(ds)));
+                                  },
+                                  icon: Icon(Icons.edit)),
                               IconButton(
                                   onPressed: () {
                                     FirebaseDb()
