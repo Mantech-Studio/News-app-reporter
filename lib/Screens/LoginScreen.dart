@@ -1,11 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app_reporter/DatabaseManager.dart';
-import 'package:news_app_reporter/HomePage.dart';
 import 'package:news_app_reporter/PageController.dart';
-import 'package:news_app_reporter/PasswordResetScreen.dart';
-import 'package:news_app_reporter/ProfilePage.dart';
-import 'package:news_app_reporter/SignUpScreen.dart';
+import 'PasswordResetScreen.dart';
+import 'SignUpScreen.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -81,6 +79,7 @@ class _State extends State<LoginPage> {
                       color: Colors.blue,
                       child: Text('Login'),
                       onPressed: () async {
+                        //Calling Function to login with email and password
                         await Firebase.initializeApp();
                         String txt = await FirebaseDb().signinwithemail(
                             nameController, passwordController);

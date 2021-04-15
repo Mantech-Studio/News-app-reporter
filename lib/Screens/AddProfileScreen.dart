@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
-import 'package:news_app_reporter/SelectImageScreen.dart';
+import 'SelectImageScreen.dart';
 
 class SignUpProfile extends StatefulWidget {
   @override
@@ -26,6 +25,7 @@ class _SignUpProfileState extends State<SignUpProfile> {
           child: Column(
             children: [
               Container(
+                // TODO: check if data entered is valid and displaying error message
                 padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
                   keyboardType: TextInputType.emailAddress,

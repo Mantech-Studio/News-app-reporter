@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:news_app_reporter/BlogPage.dart';
+import 'Screens/BlogPage.dart';
 import 'package:news_app_reporter/DatabaseManager.dart';
-import 'package:news_app_reporter/HoroscopePage.dart';
-import 'package:news_app_reporter/LoginScreen.dart';
-import 'package:news_app_reporter/ProfilePage.dart';
+import 'Screens/HoroscopePage.dart';
+import 'Screens/LoginScreen.dart';
+import 'Screens/ProfilePage.dart';
 
 class PageControllerScreen extends StatefulWidget {
   @override
@@ -11,6 +11,7 @@ class PageControllerScreen extends StatefulWidget {
 }
 
 class _PageControllerScreenState extends State<PageControllerScreen> {
+  //used to control page number
   final PageController controller = PageController(initialPage: 0);
 
   @override
@@ -27,6 +28,7 @@ class _PageControllerScreenState extends State<PageControllerScreen> {
                 color: Colors.white,
               ),
               onPressed: () async {
+                //Sign out Function is called
                 await FirebaseDb().signout();
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => LoginPage()),

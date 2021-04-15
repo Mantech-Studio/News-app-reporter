@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,11 @@ class _AddBlogPageState extends State<AddBlogPage> {
   late File _image;
   late String title;
   late String description;
+  late String username;
+  var docid;
+  // Retrieving user id and storing it in uid
+  String uid = FirebaseDb().getuid().toString();
+  // Widget to select Date
   _selectDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
       context: context,
@@ -33,6 +38,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
       });
   }
 
+  // Function to get the image from gallery
   Future getImage() async {
     final pickedFile =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 20);
@@ -48,9 +54,23 @@ class _AddBlogPageState extends State<AddBlogPage> {
     });
   }
 
+  // Function to get the current users username
+  Future<void> getemail() async {
+    FirebaseFirestore.instance
+        .collection("profile")
+        .doc(uid)
+        .snapshots()
+        .listen((event) {
+      setState(() {
+        username = event.get("full_name");
+      });
+    });
+  }
+
+  //Function to Add Data to Database (category-> All news)
   Future<void> addUser() async {
     // Call the user's CollectionReference to add a new user
-    String uid = FirebaseDb().getuid().toString();
+
     CollectionReference users =
         FirebaseFirestore.instance.collection('All News');
 
@@ -60,17 +80,48 @@ class _AddBlogPageState extends State<AddBlogPage> {
     String downloadURL = await firebase_storage.FirebaseStorage.instance
         .ref('blog/$uid$title.png')
         .getDownloadURL();
+    await addcategory(downloadURL);
     return users
-        .add({
+        .doc(docid)
+        .set({
           'title': title,
           'description': description,
           'date': selectedDate.toString().split(' ')[0],
           'category': category,
           'uid': uid,
           'image_url': downloadURL,
+          'username': username,
         })
-        .then((value) => print("User Added"))
+        .then((value) => print('blog added'))
         .catchError((error) => print("Failed to add user: $error"));
+  }
+
+  //Function to add data based on category
+  Future<void> addcategory(downloadUrl) async {
+    // Call the user's CollectionReference to add a new user
+    String uid = FirebaseDb().getuid().toString();
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('$category');
+    return users.add({
+      'title': title,
+      'description': description,
+      'date': selectedDate.toString().split(' ')[0],
+      'category': category,
+      'uid': uid,
+      'image_url': downloadUrl,
+      'username': username,
+    }).then((value) {
+      setState(() {
+        docid = value.id;
+      });
+    }).catchError((error) => print("Failed to add user: $error"));
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getemail();
+    super.initState();
   }
 
   @override
@@ -81,6 +132,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
+            // TODO: check if data entered is valid and displaying error message
             Container(
               padding: EdgeInsets.all(10),
               child: TextField(
@@ -97,8 +149,16 @@ class _AddBlogPageState extends State<AddBlogPage> {
               ),
             ),
             FlatButton(
-              onPressed: () {
-                getImage();
+              onPressed: () async {
+                await getImage();
+                Fluttertoast.showToast(
+                    msg: 'Image Added',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
               },
               child: Text('Add Image'),
               color: Colors.blueAccent,
@@ -189,12 +249,20 @@ class _AddBlogPageState extends State<AddBlogPage> {
             ),
             RaisedButton(
               onPressed: () async {
+                Fluttertoast.showToast(
+                    msg: 'Please wait ... uploading blog',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
                 await addUser();
                 Navigator.pop(context);
               },
               child: Text('Upload Blog'),
               color: Colors.blueAccent,
-            )
+            ),
           ],
         ),
       ),

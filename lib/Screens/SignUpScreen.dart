@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:news_app_reporter/AddProfileScreen.dart';
+import 'AddProfileScreen.dart';
 import 'package:news_app_reporter/DatabaseManager.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -68,6 +68,7 @@ class _State extends State<SignUpPage> {
                       color: Colors.blue,
                       child: Text('Sign Up'),
                       onPressed: () async {
+                        // Calling a function while registers email and password
                         await Firebase.initializeApp();
                         String txt = await FirebaseDb().registerwithemail(
                             nameController, passwordController);

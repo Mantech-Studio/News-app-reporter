@@ -16,6 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
     CollectionReference users =
         FirebaseFirestore.instance.collection('profile');
     return Scaffold(
+      // Retrieving data of user and displaying it in profile section
       body: FutureBuilder<DocumentSnapshot>(
         future: users.doc(uid).get(),
         builder:
@@ -28,17 +29,24 @@ class _ProfilePageState extends State<ProfilePage> {
             Map<String, dynamic> data = snapshot.data!.data()!;
             return SingleChildScrollView(
               scrollDirection: Axis.vertical,
-              child: Column(
-                children: [
-                  Container(
-                    height: 300,
-                    width: 300,
-                    child: CachedNetworkImage(imageUrl: data['image_url']),
-                  ),
-                  Text('Full Name: ${data['full_name']}'),
-                  Text('Mobile Number: ${data['mobile_number']}'),
-                  Text('Company: ${data['company']}'),
-                ],
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 180.0,
+                      height: 180.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: CachedNetworkImageProvider(data['image_url']),
+                        ),
+                      ),
+                    ),
+                    Text('Full Name: ${data['full_name']}'),
+                    Text('Mobile Number: ${data['mobile_number']}'),
+                    Text('Company: ${data['company']}'),
+                  ],
+                ),
               ),
             );
             //Text("Full Name: ${data['full_name']} ${data['company']}");

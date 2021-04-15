@@ -1,14 +1,14 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:news_app_reporter/DatabaseManager.dart';
-import 'package:news_app_reporter/LoginScreen.dart';
+import 'LoginScreen.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class SelectImage extends StatefulWidget {
+  //Data of user to upload
   String name;
   String mobnum;
   String company;
@@ -21,6 +21,7 @@ class _SelectImageState extends State<SelectImage> {
   late File _image;
   final picker = ImagePicker();
   bool loading = false;
+  // Selecting image from gallery
   Future getImage() async {
     final pickedFile =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 20);
@@ -36,6 +37,7 @@ class _SelectImageState extends State<SelectImage> {
     });
   }
 
+  //Function to store data in database(collection->profile)
   Future<void> addUser() async {
     // Call the user's CollectionReference to add a new user
     String uid = FirebaseDb().getuid().toString();
@@ -55,6 +57,7 @@ class _SelectImageState extends State<SelectImage> {
           'company': widget.company,
           'mobile_number': widget.mobnum,
           'image_url': downloadURL,
+          'followers': 0,
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));

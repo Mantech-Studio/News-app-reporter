@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 class FirebaseDb {
   FirebaseAuth auth = FirebaseAuth.instance;
+  //Retrieving user id
   getuid() {
     return auth.currentUser!.uid;
   }
@@ -48,6 +49,37 @@ class FirebaseDb {
         return 'Wrong password provided for that user.';
       }
     }
+  }
+
+  // Function to Update the blog
+  UpdateBlog(docid) async {
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+    return users
+        .doc('ABC123')
+        .update({'company': 'Stokes and Sons'})
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  // Function To Delete a blog
+  DeleteBlog(docid, category) async {
+    await DeleteCategoryBlog(docid, category);
+    CollectionReference blog =
+        FirebaseFirestore.instance.collection('All News');
+    return blog
+        .doc(docid)
+        .delete()
+        .then((value) => print("Blog Deleted"))
+        .catchError((error) => print("Failed to delete Blog: $error"));
+  }
+
+  DeleteCategoryBlog(docid, category) {
+    CollectionReference blog = FirebaseFirestore.instance.collection(category);
+    return blog
+        .doc(docid)
+        .delete()
+        .then((value) => print("Category Blog Deleted"))
+        .catchError((error) => print("Failed to delete Blog: $error"));
   }
 
   //Reset Password
