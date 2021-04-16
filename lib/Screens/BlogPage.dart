@@ -21,7 +21,7 @@ class _BlogPageState extends State<BlogPage> {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('All News')
-            .where(uid)
+            .where('uid', isEqualTo: uid)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -70,13 +70,19 @@ class _BlogPageState extends State<BlogPage> {
                                   },
                                   icon: Icon(Icons.edit)),
                               IconButton(
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    CollectionReference profile =
+                                        FirebaseFirestore.instance
+                                            .collection('profile');
+                                    await profile.doc(uid).update({
+                                      'total_blogs': FieldValue.increment(-1)
+                                    });
                                     FirebaseDb()
                                         .DeleteBlog(ds.id, ds['category']);
                                   },
                                   icon: Icon(Icons.delete))
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),

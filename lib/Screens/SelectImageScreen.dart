@@ -21,6 +21,7 @@ class _SelectImageState extends State<SelectImage> {
   late File _image;
   final picker = ImagePicker();
   bool loading = false;
+
   // Selecting image from gallery
   Future getImage() async {
     final pickedFile =
@@ -50,17 +51,16 @@ class _SelectImageState extends State<SelectImage> {
     String downloadURL = await firebase_storage.FirebaseStorage.instance
         .ref('profile/$uid.png')
         .getDownloadURL();
-    return users
-        .doc(uid)
-        .set({
-          'full_name': widget.name,
-          'company': widget.company,
-          'mobile_number': widget.mobnum,
-          'image_url': downloadURL,
-          'followers': 0,
-        })
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+    return users.doc(uid).set({
+      'full_name': widget.name,
+      'company': widget.company,
+      'mobile_number': widget.mobnum,
+      'image_url': downloadURL,
+      'followers': 0,
+      'total_blogs': 0
+    }).then((value) {
+      setState(() {});
+    }).catchError((error) => print("Failed to add user: $error"));
   }
 
   @override
@@ -76,18 +76,32 @@ class _SelectImageState extends State<SelectImage> {
               : Container(height: 200, width: 200, child: Image.file(_image)),
           FlatButton(
               onPressed: () async {
-                await addUser();
-                await Fluttertoast.showToast(
-                    msg: 'Account Created',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.red,
-                    textColor: Colors.white,
-                    fontSize: 16.0);
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                    (Route<dynamic> route) => false);
+                try {
+                  if (_image != null) {
+                    await addUser();
+
+                    await Fluttertoast.showToast(
+                        msg: 'Account Created',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        (Route<dynamic> route) => false);
+                  }
+                } catch (e) {
+                  Fluttertoast.showToast(
+                      msg: 'Please Upload An Image',
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                }
               },
               child: Text('Done'),
               color: Colors.blueAccent)

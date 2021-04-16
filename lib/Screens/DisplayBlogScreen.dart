@@ -32,6 +32,13 @@ class _DisplayBlogState extends State<DisplayBlog> {
                 ),
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text('Views:' + widget.ds['views'].toString()),
+                Text('Impression:' + widget.ds['impression'].toString()),
+              ],
+            ),
             Text(widget.ds['description']),
             Text(widget.ds['date']),
             Text(widget.ds['category']),

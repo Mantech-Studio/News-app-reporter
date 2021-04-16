@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:news_app_reporter/DatabaseManager.dart';
 
 class UpdateBlogPage extends StatefulWidget {
@@ -14,6 +17,9 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
   DateTime selectedDate = DateTime.now();
   late String title;
   late String description;
+  final picker = ImagePicker();
+  late File _image;
+  String uid = FirebaseDb().getuid().toString();
   _selectDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
       context: context,
@@ -25,6 +31,21 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
       setState(() {
         selectedDate = picked;
       });
+  }
+
+  Future getImage() async {
+    final pickedFile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 20);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+
+        print(_image);
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   @override
@@ -53,21 +74,21 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
                 },
               ),
             ),
-            // FlatButton(
-            //   onPressed: () async {
-            //     await getImage();
-            //     Fluttertoast.showToast(
-            //         msg: 'Image Added',
-            //         toastLength: Toast.LENGTH_SHORT,
-            //         gravity: ToastGravity.BOTTOM,
-            //         timeInSecForIosWeb: 1,
-            //         backgroundColor: Colors.red,
-            //         textColor: Colors.white,
-            //         fontSize: 16.0);
-            //   },
-            //   child: Text('Add Image'),
-            //   color: Colors.blueAccent,
-            // ),
+            FlatButton(
+              onPressed: () async {
+                await getImage();
+                Fluttertoast.showToast(
+                    msg: 'Image Added',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+              },
+              child: Text('Add Image'),
+              color: Colors.blueAccent,
+            ),
             Container(
               padding: EdgeInsets.all(10),
               child: TextField(
@@ -131,7 +152,9 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
                     selectedDate.toString().split(' ')[0],
                     description,
                     title,
-                    widget.ds['category']);
+                    widget.ds['category'],
+                    _image,
+                    uid);
                 Navigator.pop(context);
               },
               child: Text('Update Blog'),

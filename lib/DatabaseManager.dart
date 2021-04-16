@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class FirebaseDb {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -52,8 +52,14 @@ class FirebaseDb {
   }
 
   // Function to Update the blog
-  UpdateBlog(docid, date, desc, title, category) async {
-    await UpdateCategoryBlog(docid, date, desc, title, category);
+  UpdateBlog(docid, date, desc, title, category, _image, uid) async {
+    await firebase_storage.FirebaseStorage.instance
+        .ref('blog/$uid$title.png')
+        .putFile((_image));
+    String downloadURL = await firebase_storage.FirebaseStorage.instance
+        .ref('blog/$uid$title.png')
+        .getDownloadURL();
+    await UpdateCategoryBlog(docid, date, desc, title, category, downloadURL);
     CollectionReference users =
         FirebaseFirestore.instance.collection('All News');
     return users
@@ -62,13 +68,14 @@ class FirebaseDb {
           'date': date,
           'description': desc,
           'title': title,
+          'image_url': downloadURL,
         })
         .then((value) => print("Blog Updated"))
         .catchError((error) => print("Failed to update Blog: $error"));
   }
 
   // Function to Update Category the blog
-  UpdateCategoryBlog(docid, date, desc, title, category) {
+  UpdateCategoryBlog(docid, date, desc, title, category, downloadURL) {
     CollectionReference users = FirebaseFirestore.instance.collection(category);
     return users
         .doc(docid)
@@ -76,6 +83,7 @@ class FirebaseDb {
           'date': date,
           'description': desc,
           'title': title,
+          'image_url': downloadURL,
         })
         .then((value) => print("Category Blog Updated"))
         .catchError((error) => print("Failed to update Category Blog: $error"));
@@ -100,6 +108,42 @@ class FirebaseDb {
         .delete()
         .then((value) => print("Category Blog Deleted"))
         .catchError((error) => print("Failed to delete Blog: $error"));
+  }
+
+  // Function to add zodiac sign data
+  addzodiacdata(data, date, sign, uid) {
+    CollectionReference zodiac = FirebaseFirestore.instance.collection(sign);
+    return zodiac
+        .add({
+          'data': data,
+          'date': date,
+          'uid': uid,
+          'views': 0,
+        })
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
+  }
+
+  // Function to update zodiac sign data
+  updatezodiacdata(data, docid, sign) {
+    CollectionReference zodiac = FirebaseFirestore.instance.collection(sign);
+    return zodiac
+        .doc(docid)
+        .update({
+          'data': data,
+        })
+        .then((value) => print("Category Blog Updated"))
+        .catchError((error) => print("Failed to update Category Blog: $error"));
+  }
+
+  // Function to delete zodiac sign data
+  deletezodiacdata(docid, sign) {
+    CollectionReference zodiac = FirebaseFirestore.instance.collection(sign);
+    return zodiac
+        .doc(docid)
+        .delete()
+        .then((value) => print("zodiac data Deleted"))
+        .catchError((error) => print("Failed to delete zodiac data: $error"));
   }
 
   //Reset Password

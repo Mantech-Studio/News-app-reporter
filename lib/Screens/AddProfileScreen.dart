@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'SelectImageScreen.dart';
@@ -69,17 +70,36 @@ class _SignUpProfileState extends State<SignUpProfile> {
                   },
                 ),
               ),
-              FlatButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SelectImage(name, mobnumber, company)),
-                  );
-                },
-                child: Text('Next'),
-              )
+              Text(
+                '*Please provide all the details',
+                style: TextStyle(color: Colors.red),
+              ),
+              RaisedButton(
+                  onPressed: () {
+                    try {
+                      if (name != null ||
+                          mobnumber != null ||
+                          company != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  SelectImage(name, mobnumber, company)),
+                        );
+                      }
+                    } catch (e) {
+                      Fluttertoast.showToast(
+                          msg: 'Please provide all the details',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                    }
+                  },
+                  child: Text('Next'),
+                  color: Colors.blueAccent)
             ],
           ),
         ),

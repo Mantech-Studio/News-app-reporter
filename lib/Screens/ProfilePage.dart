@@ -45,6 +45,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     Text('Full Name: ${data['full_name']}'),
                     Text('Mobile Number: ${data['mobile_number']}'),
                     Text('Company: ${data['company']}'),
+                    Text('Followers: ${data['followers']}'),
+                    Text('Total_blogs: ${data['total_blogs']}')
                   ],
                 ),
               ),

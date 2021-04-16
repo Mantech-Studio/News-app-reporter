@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -73,7 +74,8 @@ class _AddBlogPageState extends State<AddBlogPage> {
 
     CollectionReference users =
         FirebaseFirestore.instance.collection('All News');
-
+    CollectionReference profile =
+        FirebaseFirestore.instance.collection('profile');
     await firebase_storage.FirebaseStorage.instance
         .ref('blog/$uid$title.png')
         .putFile((_image));
@@ -81,6 +83,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
         .ref('blog/$uid$title.png')
         .getDownloadURL();
     await addcategory(downloadURL);
+    await profile.doc(uid).update({'total_blogs': FieldValue.increment(1)});
     return users
         .doc(docid)
         .set({
@@ -91,6 +94,8 @@ class _AddBlogPageState extends State<AddBlogPage> {
           'uid': uid,
           'image_url': downloadURL,
           'username': username,
+          'views': 0,
+          'impression': 0,
         })
         .then((value) => print('blog added'))
         .catchError((error) => print("Failed to add user: $error"));
@@ -110,6 +115,8 @@ class _AddBlogPageState extends State<AddBlogPage> {
       'uid': uid,
       'image_url': downloadUrl,
       'username': username,
+      'views': 0,
+      'impression': 0,
     }).then((value) {
       setState(() {
         docid = value.id;

@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:news_app_reporter/DatabaseManager.dart';
 import 'package:news_app_reporter/PageController.dart';
 import 'PasswordResetScreen.dart';
@@ -88,6 +89,15 @@ class _State extends State<LoginPage> {
                               MaterialPageRoute(
                                   builder: (context) => PageControllerScreen()),
                               (Route<dynamic> route) => false);
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: txt,
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
                         }
                       },
                     )),
