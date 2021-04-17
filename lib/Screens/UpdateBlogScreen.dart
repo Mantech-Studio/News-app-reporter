@@ -20,18 +20,6 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
   final picker = ImagePicker();
   late File _image;
   String uid = FirebaseDb().getuid().toString();
-  _selectDate(BuildContext context) async {
-    final DateTime picked = (await showDatePicker(
-      context: context,
-      initialDate: selectedDate, // Refer step 1
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    ))!;
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-      });
-  }
 
   Future getImage() async {
     final pickedFile =
@@ -107,33 +95,6 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
               ),
             ),
 
-            Row(
-              children: [
-                Text('Date :'),
-                SizedBox(width: 10),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      "${selectedDate.toLocal()}".split(' ')[0],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(
-                      width: 20.0,
-                    ),
-                    RaisedButton(
-                      onPressed: () => _selectDate(context), // Refer step 3
-                      child: Text(
-                        'change date',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      color: Colors.blueAccent,
-                    ),
-                  ],
-                )
-              ],
-            ),
             SizedBox(
               height: 20,
             ),
@@ -147,14 +108,8 @@ class _UpdateBlogPageState extends State<UpdateBlogPage> {
                     backgroundColor: Colors.red,
                     textColor: Colors.white,
                     fontSize: 16.0);
-                await FirebaseDb().UpdateBlog(
-                    widget.ds.id,
-                    selectedDate.toString().split(' ')[0],
-                    description,
-                    title,
-                    widget.ds['category'],
-                    _image,
-                    uid);
+                await FirebaseDb().UpdateBlog(widget.ds.id, Timestamp.now(),
+                    description, title, widget.ds['category'], _image, uid);
                 Navigator.pop(context);
               },
               child: Text('Update Blog'),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app_reporter/DatabaseManager.dart';
 import 'package:news_app_reporter/Screens/HoroscopeDataPage.dart';
@@ -82,10 +83,7 @@ class _HoroscopePageState extends State<HoroscopePage> {
                         child: Text('upload'),
                         onPressed: () async {
                           await FirebaseDb().addzodiacdata(
-                              data,
-                              currentDate.toString().split(' ')[0],
-                              months[i],
-                              uid);
+                              data, Timestamp.now(), months[i], uid);
                           setState(() {
                             Navigator.pop(context);
                           });

@@ -21,72 +21,73 @@ class _BlogPageState extends State<BlogPage> {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('All News')
-            .where('uid', isEqualTo: uid)
+            .orderBy('date', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator(
-              semanticsLabel: 'Linear progress indicator',
-            );
+            return Center(child: Text('No Data available'));
           } else {
             return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
-
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DisplayBlog(ds)));
-                    },
-                    child: Card(
-                      margin: EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 100,
-                            width: 400,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image:
-                                    CachedNetworkImageProvider(ds['image_url']),
+                  if (ds['uid'] == uid) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DisplayBlog(ds)));
+                      },
+                      child: Card(
+                        margin: EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 100,
+                              width: 400,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: CachedNetworkImageProvider(
+                                      ds['image_url']),
+                                ),
                               ),
                             ),
-                          ),
-                          Text(ds['title']),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                UpdateBlogPage(ds)));
-                                  },
-                                  icon: Icon(Icons.edit)),
-                              IconButton(
-                                  onPressed: () async {
-                                    CollectionReference profile =
-                                        FirebaseFirestore.instance
-                                            .collection('profile');
-                                    await profile.doc(uid).update({
-                                      'total_blogs': FieldValue.increment(-1)
-                                    });
-                                    FirebaseDb()
-                                        .DeleteBlog(ds.id, ds['category']);
-                                  },
-                                  icon: Icon(Icons.delete))
-                            ],
-                          ),
-                        ],
+                            Text(ds['title']),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateBlogPage(ds)));
+                                    },
+                                    icon: Icon(Icons.edit)),
+                                IconButton(
+                                    onPressed: () async {
+                                      CollectionReference profile =
+                                          FirebaseFirestore.instance
+                                              .collection('profile');
+                                      await profile.doc(uid).update({
+                                        'total_blogs': FieldValue.increment(-1)
+                                      });
+                                      FirebaseDb()
+                                          .DeleteBlog(ds.id, ds['category']);
+                                    },
+                                    icon: Icon(Icons.delete))
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return Text('');
+                  }
                 });
           }
         },

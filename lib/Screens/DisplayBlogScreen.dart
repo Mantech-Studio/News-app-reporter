@@ -40,7 +40,7 @@ class _DisplayBlogState extends State<DisplayBlog> {
               ],
             ),
             Text(widget.ds['description']),
-            Text(widget.ds['date']),
+            Text(widget.ds['date'].toString()),
             Text(widget.ds['category']),
           ],
         ),

@@ -50,10 +50,7 @@ class _HoroscopeDataState extends State<HoroscopeData> {
                           child: Text('upload'),
                           onPressed: () async {
                             await FirebaseDb().addzodiacdata(
-                                data,
-                                currentDate.toString().split(' ')[0],
-                                widget.sign,
-                                uid);
+                                data, Timestamp.now(), widget.sign, uid);
                             setState(() {
                               Navigator.pop(context);
                             });
@@ -70,7 +67,7 @@ class _HoroscopeDataState extends State<HoroscopeData> {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection(widget.sign)
-            .where('uid', isEqualTo: uid)
+            .orderBy('date', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -80,86 +77,89 @@ class _HoroscopeDataState extends State<HoroscopeData> {
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
-
-                  return GestureDetector(
-                    child: Card(
-                      margin: EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          Text(ds['data']),
-                          Text(ds['date']),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              IconButton(
-                                  onPressed: () async {
-                                    await showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AlertDialog(
-                                            title: Column(children: [
-                                              Container(
-                                                  width: 100,
-                                                  height: 100,
-                                                  child: Image.asset(
-                                                      'assets/${widget.sign}.jpg')),
-                                              Text(widget.sign)
-                                            ]),
-                                            content: TextField(
-                                              minLines: 3,
-                                              maxLines: 5,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  updateddata = value;
-                                                });
-                                              },
-                                              decoration: InputDecoration(
-                                                  hintText:
-                                                      "Enter the data to be updated"),
-                                            ),
-                                            actions: <Widget>[
-                                              FlatButton(
-                                                color: Colors.green,
-                                                textColor: Colors.white,
-                                                child: Text('upload'),
-                                                onPressed: () async {
-                                                  await FirebaseDb()
-                                                      .updatezodiacdata(
-                                                          updateddata,
-                                                          ds.id,
-                                                          widget.sign);
+                  if (ds['uid'] == uid) {
+                    return GestureDetector(
+                      child: Card(
+                        margin: EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Text(ds['data']),
+                            Text(ds['date'].toString()),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                IconButton(
+                                    onPressed: () async {
+                                      await showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Column(children: [
+                                                Container(
+                                                    width: 100,
+                                                    height: 100,
+                                                    child: Image.asset(
+                                                        'assets/${widget.sign}.jpg')),
+                                                Text(widget.sign)
+                                              ]),
+                                              content: TextField(
+                                                minLines: 3,
+                                                maxLines: 5,
+                                                onChanged: (value) {
                                                   setState(() {
-                                                    Navigator.pop(context);
+                                                    updateddata = value;
                                                   });
                                                 },
+                                                decoration: InputDecoration(
+                                                    hintText:
+                                                        "Enter the data to be updated"),
                                               ),
-                                            ],
-                                          );
-                                        });
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  color: Colors.green,
+                                                  textColor: Colors.white,
+                                                  child: Text('upload'),
+                                                  onPressed: () async {
+                                                    await FirebaseDb()
+                                                        .updatezodiacdata(
+                                                            updateddata,
+                                                            ds.id,
+                                                            widget.sign);
+                                                    setState(() {
+                                                      Navigator.pop(context);
+                                                    });
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                    },
+                                    icon: Icon(Icons.edit)),
+                                IconButton(
+                                  onPressed: () {
+                                    FirebaseDb()
+                                        .deletezodiacdata(ds.id, widget.sign);
                                   },
-                                  icon: Icon(Icons.edit)),
-                              IconButton(
-                                onPressed: () {
-                                  FirebaseDb()
-                                      .deletezodiacdata(ds.id, widget.sign);
-                                },
-                                icon: Icon(Icons.delete),
-                              ),
-                              Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.visibility),
-                                  ),
-                                  Text(ds['views'].toString())
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
+                                  icon: Icon(Icons.delete),
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(Icons.visibility),
+                                    ),
+                                    Text(ds['views'].toString())
+                                  ],
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return Text('');
+                  }
                 });
           }
         },

@@ -26,18 +26,6 @@ class _AddBlogPageState extends State<AddBlogPage> {
   // Retrieving user id and storing it in uid
   String uid = FirebaseDb().getuid().toString();
   // Widget to select Date
-  _selectDate(BuildContext context) async {
-    final DateTime picked = (await showDatePicker(
-      context: context,
-      initialDate: selectedDate, // Refer step 1
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    ))!;
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-      });
-  }
 
   // Function to get the image from gallery
   Future getImage() async {
@@ -89,7 +77,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
         .set({
           'title': title,
           'description': description,
-          'date': selectedDate.toString().split(' ')[0],
+          'date': Timestamp.now(),
           'category': category,
           'uid': uid,
           'image_url': downloadURL,
@@ -110,7 +98,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
     return users.add({
       'title': title,
       'description': description,
-      'date': selectedDate.toString().split(' ')[0],
+      'date': Timestamp.now(),
       'category': category,
       'uid': uid,
       'image_url': downloadUrl,
@@ -224,33 +212,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                Text('Date :'),
-                SizedBox(width: 10),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      "${selectedDate.toLocal()}".split(' ')[0],
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(
-                      width: 20.0,
-                    ),
-                    RaisedButton(
-                      onPressed: () => _selectDate(context), // Refer step 3
-                      child: Text(
-                        'change date',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      color: Colors.blueAccent,
-                    ),
-                  ],
-                )
-              ],
-            ),
+
             SizedBox(
               height: 20,
             ),
